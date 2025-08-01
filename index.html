@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venue OS - Interactive Workspace</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #f8f9fa;
+            overflow: hidden;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .side-panel {
+            width: 250px;
+            flex-shrink: 0;
+            background-color: #e9ecef;
+            padding: 20px;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        h1, h2, h3 {
+            font-weight: 500;
+            color: #343a40;
+            margin-top: 0;
+        }
+        svg {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .node text {
+            pointer-events: none;
+            font-size: 10px;
+            font-weight: 500;
+            fill: #343a40;
+        }
+        .node circle {
+            cursor: pointer;
+            transition: stroke 0.2s;
+        }
+        .node circle.selected {
+            stroke: #ff4500;
+            stroke-width: 3px;
+        }
+        .note-indicator {
+            fill: #ffd700;
+            stroke: #343a40;
+            stroke-width: 0.5px;
+            pointer-events: none;
+        }
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        #notes-section {
+            width: 960px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #notes-area {
+            width: 100%;
+            height: 120px;
+            box-sizing: border-box;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .notes-buttons { display: flex; gap: 10px; }
+        .notes-buttons button {
+            padding: 10px 15px; border: none; border-radius: 5px;
+            background-color: #007bff; color: white;
+            font-size: 14px; cursor: pointer; transition: background-color 0.2s;
+        }
+        .notes-buttons button:hover { background-color: #0056b3; }
+        .side-panel ul { list-style: none; padding-left: 0; }
+        .side-panel li { background-color: #fff; padding: 8px; margin-bottom: 5px; border-radius: 4px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1>Venue OS - Interactive Workspace</h1>
+        <svg width="960" height="500"></svg>
+        <div id="notes-section">
+            <h2 id="notes-header">Select a bubble to add notes</h2>
+            <textarea id="notes-area" placeholder="Click a bubble and start typing..."></textarea>
+            <div class="notes-buttons">
+                <button id="save-btn">Save Project</button>
+                <button id="load-btn">Load Project</button>
+                <input type="file" id="file-input" accept=".json" style="display: none;">
+            </div>
+        </div>
+    </div>
+    <div class="side-panel">
+        <h3 id="side-panel-header">Connections</h3>
+        <h4>Connected To:</h4>
+        <ul id="targets-list"></ul>
+        <h4>Connected From:</h4>
+        <ul id="sources-list"></ul>
+    </div>
+    <div id="tooltip" class="tooltip"></div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        const width = 960;
+        const height = 500;
+
+        // --- GLOBAL STATE ---
+        let selectedNode = null;
+        let notes = {};
+
+        // --- DOM ELEMENTS ---
+        const svg = d3.select("svg");
+        const tooltip = d3.select("#tooltip");
+        const notesHeader = document.getElementById('notes-header');
+        const notesArea = document.getElementById('notes-area');
+        const saveBtn = document.getElementById('save-btn');
+        const loadBtn = document.getElementById('load-btn');
+        const fileInput = document.getElementById('file-input');
+        const targetsList = document.getElementById('targets-list');
+        const sourcesList = document.getElementById('sources-list');
+        
+        // --- DATA ---
+        let graphData = {
+            nodes: [
+                { id: "Venue OS", group: 1, radius: 30, description: "The central SaaS platform for venue management." },
+                { id: "Venue Owners", group: 2, radius: 15, description: "Manage their spaces, staff, and automation." },
+                { id: "Event Planners", group: 2, radius: 15, description: "Discover, book, and interact with venues." },
+                { id: "Automated Provisioning", group: 3, radius: 12, description: "Trigger-and-action workflow for setup." },
+                { id: "User Management", group: 3, radius: 12, description: "Manage staff accounts in connected systems." },
+                { id: "Secure Authentication", group: 3, radius: 12, description: "Robust login system for all users." },
+                { id: "Integrated Billing", group: 3, radius: 12, description: "Subscription management via Braintree." },
+                { id: "Real-time Communication", group: 3, radius: 12, description: "In-app chat for venues and clients." },
+                { id: "Firebase", group: 4, radius: 18, description: "The core backend platform." },
+                { id: "Firestore", group: 4, radius: 12, description: "Real-time NoSQL database." },
+                { id: "Cloud Functions", group: 4, radius: 12, description: "Serverless backend business logic." },
+                { id: "Firebase Auth", group: 4, radius: 12, description: "Handles user authentication." },
+                { id: "Firebase Hosting", group: 4, radius: 12, description: "Hosts the frontend web application." },
+                { id: "Braintree", group: 4, radius: 12, description: "Payment processing for subscriptions." },
+                { id: "HTML/CSS/JS", group: 4, radius: 12, description: "The frontend technology." },
+                { id: "Phase 1: MVP", group: 5, radius: 10, description: "Build core automation workflow." },
+                { id: "Phase 2: Beta", group: 5, radius: 10, description: "Onboard first venues, add billing/chat." },
+                { id: "Phase 3: Launch", group: 5, radius: 10, description: "Go public with freemium model." },
+                { id: "Phase 4: Scale", group: 5, radius: 10, description: "Build planner portal, add AI/video." }
+            ],
+            links: [
+                { source: "Venue Owners", target: "Venue OS" }, { source: "Event Planners", target: "Venue OS" },
+                { source: "Venue OS", target: "Automated Provisioning" }, { source: "Venue OS", target: "User Management" },
+                { source: "Venue OS", target: "Secure Authentication" }, { source: "Venue OS", target: "Integrated Billing" },
+                { source: "Venue OS", target: "Real-time Communication" }, { source: "Venue OS", target: "Firebase" },
+                { source: "Venue OS", target: "Braintree" }, { source: "Venue OS", target: "HTML/CSS/JS" },
+                { source: "Firebase", target: "Firestore" }, { source: "Firebase", target: "Cloud Functions" },
+                { source: "Firebase", target: "Firebase Auth" }, { source: "Firebase", target: "Firebase Hosting" },
+                { source: "Secure Authentication", target: "Firebase Auth" }, { source: "Integrated Billing", target: "Braintree" },
+                { source: "Phase 1: MVP", target: "Phase 2: Beta" }, { source: "Phase 2: Beta", target: "Phase 3: Launch" },
+                { source: "Phase 3: Launch", target: "Phase 4: Scale" }, { source: "Venue OS", target: "Phase 1: MVP" },
+            ]
+        };
+
+        const color = d3.scaleOrdinal(d3.schemeCategory10);
+        
+        const simulation = d3.forceSimulation(graphData.nodes)
+            .force("link", d3.forceLink(graphData.links).id(d => d.id).distance(90))
+            .force("charge", d3.forceManyBody().strength(-150))
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        const link = svg.append("g").attr("stroke", "#999").attr("stroke-opacity", 0.6)
+            .selectAll("line").data(graphData.links).join("line");
+
+        const node = svg.append("g").selectAll("g").data(graphData.nodes).join("g").attr("class", "node")
+            .on("click", handleNodeClick)
+            .call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended));
+
+        node.append("circle")
+            .attr("r", d => d.radius)
+            .attr("fill", d => color(d.group))
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5);
+        
+        node.append("text").text(d => d.id).attr("x", d => d.radius + 5).attr("y", 3);
+        
+        // Note indicator (star)
+        node.append("path")
+            .attr("class", "note-indicator")
+            .attr("d", d3.symbol().type(d3.symbolStar).size(64))
+            .attr("transform", d => `translate(${d.radius * 0.7}, ${-d.radius * 0.7})`)
+            .style("display", "none");
+
+        node.on("mouseover", (event, d) => {
+            tooltip.style("opacity", 1).html(d.description)
+                   .style("left", (event.pageX + 10) + "px").style("top", (event.pageY - 28) + "px");
+        }).on("mouseout", () => { tooltip.style("opacity", 0); });
+
+        simulation.on("tick", () => {
+            link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+            node.attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        // --- FUNCTIONS ---
+        function handleNodeClick(event, d) {
+            selectedNode = d;
+            
+            // Update visuals
+            node.selectAll("circle").classed("selected", n => n === d);
+            notesHeader.innerText = `Notes for: ${d.id}`;
+            notesArea.value = notes[d.id] || '';
+            notesArea.disabled = false;
+
+            updateSidePanel(d);
+        }
+
+        function updateSidePanel(nodeData) {
+            const targets = graphData.links.filter(l => l.source.id === nodeData.id).map(l => l.target.id);
+            const sources = graphData.links.filter(l => l.target.id === nodeData.id).map(l => l.source.id);
+            
+            targetsList.innerHTML = targets.map(t => `<li>${t}</li>`).join('');
+            sourcesList.innerHTML = sources.map(s => `<li>${s}</li>`).join('');
+        }
+        
+        function updateNoteIndicators() {
+            node.selectAll(".note-indicator")
+                .style("display", n => (notes[n.id] && notes[n.id].trim() !== '') ? "inline" : "none");
+        }
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
+        function dragended(event, d) { if (!event.active) simulation.alphaTarget(0); }
+
+        // --- EVENT LISTENERS ---
+        notesArea.addEventListener('input', () => {
+            if (selectedNode) {
+                notes[selectedNode.id] = notesArea.value;
+                updateNoteIndicators();
+            }
+        });
+
+        saveBtn.addEventListener('click', () => {
+            // Save node positions along with notes
+            const dataToSave = {
+                notes: notes,
+                nodePositions: graphData.nodes.map(n => ({id: n.id, fx: n.x, fy: n.y}))
+            };
+            const textToSave = JSON.stringify(dataToSave, null, 2);
+            const blob = new Blob([textToSave], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'venue-os-workspace.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        loadBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', function(event) {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const loadedData = JSON.parse(e.target.result);
+                notes = loadedData.notes || {};
+                
+                // Restore node positions
+                if (loadedData.nodePositions) {
+                    simulation.stop();
+                    graphData.nodes.forEach(n => {
+                        const pos = loadedData.nodePositions.find(p => p.id === n.id);
+                        if (pos) {
+                            n.fx = pos.fx;
+                            n.fy = pos.fy;
+                        }
+                    });
+                    simulation.alpha(0.3).restart();
+                }
+
+                // Update UI
+                if (selectedNode) {
+                    notesArea.value = notes[selectedNode.id] || '';
+                }
+                updateNoteIndicators();
+            };
+            reader.readAsText(file);
+        });
+
+    </script>
+</body>
+</html>
