@@ -1,6 +1,6 @@
 # VenuOS
 
-# Venue Operating System (Venue OS)
+# Venue Operating System (Venue OS) [Wire Bae and Venu OS Dohno or Support Fund](https://ko-fi.com/kastcade/goal?g=12)
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Project Status](https://img.shields.io/badge/status-active-blue)
