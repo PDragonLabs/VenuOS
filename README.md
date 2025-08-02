@@ -81,7 +81,8 @@ To get a local copy up and running, follow these steps.
 4.  **Phase 4: Scale (Q2 2026+):** Build the event planner portal and introduce advanced AI/video features.
 
 ---
-[board](https://pdragonlabs.github.io/VenuOS/)
+ 
+[![VenueOS App](./VenueOS-Interactive-Workspace.png)](https://pdragonlabs.github.io/VenuOS/)
  
 [![VenueOS Diskus PodKast](https://img.youtube.com/vi/SkMPjItJOdM/0.jpg)](https://www.youtube.com/watch?v=SkMPjItJOdM)
 
