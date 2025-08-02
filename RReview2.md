@@ -44,3 +44,5 @@ The application is stable and all requested features have been implemented. The 
     All work is saved persistently and in real-time to the cloud.
 
 The project is at an excellent milestone, pending the next set of requirements.
+
+[Image](./Venue-OS-Live-Firebase-(Complete).png)
