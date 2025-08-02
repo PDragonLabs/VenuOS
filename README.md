@@ -86,4 +86,6 @@ To get a local copy up and running, follow these steps.
  
 [![VenueOS Diskus PodKast](https://img.youtube.com/vi/SkMPjItJOdM/0.jpg)](https://www.youtube.com/watch?v=SkMPjItJOdM)
 
+[Music Riff for VenueOS](https://on.soundcloud.com/Yxk7vx5ZMTwuY0uyXK)
+
 [page 2](./RReview1.md)
