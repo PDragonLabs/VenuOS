@@ -86,6 +86,11 @@ To get a local copy up and running, follow these steps.
  
 [![VenueOS Diskus PodKast](https://img.youtube.com/vi/SkMPjItJOdM/0.jpg)](https://www.youtube.com/watch?v=SkMPjItJOdM) 
 
-[![Music Riff for VenueOS](./image_large_f97bf48e-dca1-481d-ac78-30dc23354eae.jpeg)](https://on.soundcloud.com/Yxk7vx5ZMTwuY0uyXK){width=250px}
+[![Music Riff for VenueOS](./image_large_f97bf48e-dca1-481d-ac78-30dc23354eae.jpeg)](https://on.soundcloud.com/Yxk7vx5ZMTwuY0uyXK)
+
+[![Music Riff for VenueOS](<img src="./image_large_f97bf48e-dca1-481d-ac78-30dc23354eae.jpeg" width="200" height="100">)](https://on.soundcloud.com/Yxk7vx5ZMTwuY0uyXK)
+
+<img src="./image_large_f97bf48e-dca1-481d-ac78-30dc23354eae.jpeg" width="200" height="100">
+
 
 [page 2](./RReview1.md)
