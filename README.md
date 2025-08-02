@@ -1,6 +1,8 @@
-# VenuOS
+# VenuOS ---> VenosCSA...
 
 # Venue Operating System (Venue OS) [Wire Bae and Venu OS Dohno or Support Fund](https://ko-fi.com/kastcade/goal?g=12)
+
+like subscribe, follow, contrib... all good..
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Project Status](https://img.shields.io/badge/status-active-blue)
@@ -80,3 +82,5 @@ To get a local copy up and running, follow these steps.
 
 ---
 [board](https://pdragonlabs.github.io/VenuOS/)
+ 
+[![VenueOS Diskus PodKast](https://img.youtube.com/vi/SkMPjItJOdM/0.jpg)](https://www.youtube.com/watch?v=SkMPjItJOdM)
