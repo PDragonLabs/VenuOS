@@ -46,3 +46,5 @@ The application is stable and all requested features have been implemented. The 
 The project is at an excellent milestone, pending the next set of requirements.
 
 [Image](./Venue-OS-Live-Firebase-(Complete).png)
+
+<img src="./Venue-OS-Live-Firebase-(Complete).png" width="200" height="100">
