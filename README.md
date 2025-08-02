@@ -90,7 +90,7 @@ To get a local copy up and running, follow these steps.
 [![VenueOS Diskus PodKast](<img src="[./VenueOS-Interactive-Workspace.png](https://img.youtube.com/vi/SkMPjItJOdM/0.jpg)" width="200" height="100">)](https://www.youtube.com/watch?v=SkMPjItJOdM) 
 
 
-<img src="[./VenueOS-Interactive-Workspace.png](https://img.youtube.com/vi/SkMPjItJOdM/0.jpg)" width="200" height="100">
+<img src="https://img.youtube.com/vi/SkMPjItJOdM/0.jpg" width="200" height="100">
 
 
 [![Music Riff for VenueOS](<img src="./image_large_f97bf48e-dca1-481d-ac78-30dc23354eae.jpeg" width="200" height="100">)](https://on.soundcloud.com/Yxk7vx5ZMTwuY0uyXK)
