@@ -84,3 +84,5 @@ To get a local copy up and running, follow these steps.
 [board](https://pdragonlabs.github.io/VenuOS/)
  
 [![VenueOS Diskus PodKast](https://img.youtube.com/vi/SkMPjItJOdM/0.jpg)](https://www.youtube.com/watch?v=SkMPjItJOdM)
+
+[page 2](./RReview1.md)
